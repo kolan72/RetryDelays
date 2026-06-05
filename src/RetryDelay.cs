@@ -23,10 +23,12 @@ namespace RetryDelays
 		public static implicit operator RetryDelay(Func<int, TimeSpan> delayValueProvider) => new RetryDelay(delayValueProvider);
 
 		/// <summary>
-		/// Gets the delay value from the current retry.
+		/// Gets the delay for the specified retry attempt.
 		/// </summary>
-		/// <param name="attempt">The current retry.</param>
-		/// <returns></returns>
+		/// <param name="attempt">
+		/// The zero-based retry attempt number. The first retry attempt is 0, the second is 1, and so on.
+		/// </param>
+		/// <returns>The delay associated with the specified retry attempt.</returns>
 		public TimeSpan GetDelay(int attempt)
 		{
 			return DelayValueProvider(attempt);
