@@ -13,6 +13,8 @@
     <PackageTags>Retry Delay</PackageTags>
     <PackageIcon>RetryDelays.png</PackageIcon>
     <PackageReadmeFile>NuGet.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/kolan72/RetryDelays</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/kolan72/RetryDelays</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
