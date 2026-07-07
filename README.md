@@ -150,6 +150,6 @@ Key highlights:
 - **`RetryDelayAnalysisService`** — service that accepts `IRetryConfiguration` and produces a per-attempt delay schedule and total wait time for all four strategies
 - **`GET /retry-analysis?attempts=N`** — endpoint that runs the analysis and returns the full schedule as JSON
 
-See [`samples/README.md`](samples/README.md) for configuration details and example responses.
+See [`README.md`](samples/Intro/README.md) for configuration details and example responses.
 
 ---
