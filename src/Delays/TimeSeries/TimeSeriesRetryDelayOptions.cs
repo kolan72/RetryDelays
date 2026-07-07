@@ -13,7 +13,7 @@ namespace RetryDelays
 		public TimeSpan[] Times { get; set; } = Array.Empty<TimeSpan>();
 
 		/// <inheritdoc/>
-		public override RetryDelayType DelayType => RetryDelayType.TimeSeries;
+		internal override RetryDelayType DelayType => RetryDelayType.TimeSeries;
 
 		public static implicit operator TimeSeriesRetryDelay(TimeSeriesRetryDelayOptions options) => new TimeSeriesRetryDelay(options);
 
