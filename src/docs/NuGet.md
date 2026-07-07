@@ -139,7 +139,7 @@ RetryDelay customDelay = new RetryDelay(attempt =>
 
 ## 🧪 Sample
 
-The `samples/` directory contains an ASP.NET Core Minimal API that demonstrates library usage with full configuration support.
+The samples directory contains an ASP.NET Core Minimal API that demonstrates library usage with full configuration support.
 
 Key highlights:
 
@@ -147,7 +147,5 @@ Key highlights:
 - **`RetryConfiguration`** — concrete implementation bound from a single `RetryConfiguration` section in `appsettings.json`
 - **`RetryDelayAnalysisService`** — service that accepts `IRetryConfiguration` and produces a per-attempt delay schedule and total wait time for all four strategies
 - **`GET /retry-analysis?attempts=N`** — endpoint that runs the analysis and returns the full schedule as JSON
-
-See samples folder for concrete example.
 
 ---
