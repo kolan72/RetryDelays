@@ -136,3 +136,18 @@ RetryDelay customDelay = new RetryDelay(attempt =>
 `RetryDelays` focuses solely on **delay calculation**, allowing you to integrate it with any retry implementation or resilience framework.
 
 ---
+
+## 🧪 Sample
+
+The `samples/` directory contains an ASP.NET Core Minimal API that demonstrates library usage with full configuration support.
+
+Key highlights:
+
+- **`IRetryConfiguration`** — interface that groups four named delay options (`DelayOption1`–`DelayOption4`, covering Constant, Exponential, Linear, and TimeSeries strategies)
+- **`RetryConfiguration`** — concrete implementation bound from a single `RetryConfiguration` section in `appsettings.json`
+- **`RetryDelayAnalysisService`** — service that accepts `IRetryConfiguration` and produces a per-attempt delay schedule and total wait time for all four strategies
+- **`GET /retry-analysis?attempts=N`** — endpoint that runs the analysis and returns the full schedule as JSON
+
+See [`samples/README.md`](samples/README.md) for configuration details and example responses.
+
+---

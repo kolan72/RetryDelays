@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36915.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intro", "Intro\Intro.csproj", "{F2B4862C-6A78-C974-803B-CF3E769A7943}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetryDelays", "..\src\RetryDelays.csproj", "{BE6FE61A-8117-3FF2-16A0-29F764A56300}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F2B4862C-6A78-C974-803B-CF3E769A7943}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2B4862C-6A78-C974-803B-CF3E769A7943}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2B4862C-6A78-C974-803B-CF3E769A7943}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2B4862C-6A78-C974-803B-CF3E769A7943}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE6FE61A-8117-3FF2-16A0-29F764A56300}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE6FE61A-8117-3FF2-16A0-29F764A56300}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE6FE61A-8117-3FF2-16A0-29F764A56300}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE6FE61A-8117-3FF2-16A0-29F764A56300}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {71A2D6FF-D627-452B-AECB-904998588D24}
+	EndGlobalSection
+EndGlobal
