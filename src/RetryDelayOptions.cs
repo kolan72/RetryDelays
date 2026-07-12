@@ -10,7 +10,7 @@ namespace RetryDelays
 		/// <summary>
 		/// The type of delay.
 		/// </summary>
-		internal abstract RetryDelayType DelayType { get; }
+		public abstract RetryDelayType DelayType { get; }
 
 		/// <summary>
 		/// Base delay value between retries.

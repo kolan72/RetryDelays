@@ -22,17 +22,24 @@ public class RetryDelayAnalysisService
     {
         if (attempts < 1) attempts = 1;
 
+        var constant = new ConstantRetryDelay(_config.DelayOption1);
+        var exponential = new ExponentialRetryDelay(_config.DelayOption2);
+        var linear = new LinearRetryDelay(_config.DelayOption3);
+        var timeSeries = new TimeSeriesRetryDelay(_config.DelayOption4);
+
         return new RetryDelayAnalysisResult
         {
-            DelayOption1 = BuildSchedule("Constant",     new ConstantRetryDelay(_config.DelayOption1),     attempts),
-            DelayOption2 = BuildSchedule("Exponential",  new ExponentialRetryDelay(_config.DelayOption2),  attempts),
-            DelayOption3 = BuildSchedule("Linear",       new LinearRetryDelay(_config.DelayOption3),       attempts),
-            DelayOption4 = BuildSchedule("TimeSeries",   new TimeSeriesRetryDelay(_config.DelayOption4),   attempts),
+            DelayOption1 = BuildSchedule(constant, _config.DelayOption1.DelayType, attempts),
+            DelayOption2 = BuildSchedule(exponential, _config.DelayOption2.DelayType, attempts),
+            DelayOption3 = BuildSchedule(linear, _config.DelayOption3.DelayType, attempts),
+            DelayOption4 = BuildSchedule(timeSeries, _config.DelayOption4.DelayType, attempts),
         };
     }
 
-    private static DelaySchedule BuildSchedule(string type, RetryDelay delay, int attempts)
+    private static DelaySchedule BuildSchedule(RetryDelay delay, RetryDelayType delayType, int attempts)
     {
+        var type = delayType.ToString();
+
         var delays = Enumerable.Range(0, attempts)
             .Select(attempt => new AttemptDelay
             {
