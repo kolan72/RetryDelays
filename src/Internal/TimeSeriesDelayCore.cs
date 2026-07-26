@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace RetryDelays
 {
@@ -34,6 +35,7 @@ namespace RetryDelays
 			return MaxDelayHelper.LimitToMaxDelay(StandardJitter.AddJitter(GetDelayInner(attempt).TotalMilliseconds), _adaptedMaxDelayMs, _maxDelay);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private TimeSpan GetDelayInner(int attempt)
 		{
 			return _times[(uint)attempt <= (uint)_maxIndex ? attempt : _maxIndex];

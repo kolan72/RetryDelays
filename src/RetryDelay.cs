@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace RetryDelays
 {
@@ -29,6 +30,7 @@ namespace RetryDelays
 		/// The zero-based retry attempt number. The first retry attempt is 0, the second is 1, and so on.
 		/// </param>
 		/// <returns>The delay associated with the specified retry attempt.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public TimeSpan GetDelay(int attempt)
 		{
 			return DelayValueProvider(attempt);
