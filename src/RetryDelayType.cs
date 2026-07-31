@@ -36,6 +36,18 @@
 		/// <example>
 		/// Series [0.5s, 2s, 5s] would repeat 5s after 3rd attempt
 		/// </example>
-		TimeSeries
+		TimeSeries,
+
+		/// <summary>
+		/// The periodic delay type
+		/// </summary>
+		/// <remarks>
+		/// Uses predefined delay sequence that cycles back to the first value after the last.
+		/// Provides repeating pattern of retry intervals.
+		/// </remarks>
+		/// <example>
+		/// Series [0.5s, 2s, 5s] would cycle: 0.5s, 2s, 5s, 0.5s, 2s, 5s, ...
+		/// </example>
+		Periodic
 	}
 }
