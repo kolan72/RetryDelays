@@ -1,6 +1,6 @@
 **RetryDelays** is a lightweight .NET library for generating retry delay strategies.  
 Simplifies retry logic by removing the need for manual delay calculations - just use the appropriate `RetryDelay` or `RetryDelayOptions`.
-Supports common retry patterns such as **constant**, **linear**, **exponential**, and **time-series delays**, including **jitter** and **decorrelated jitter**.
+Supports common retry patterns such as **constant**, **linear**, **exponential**, **time-series**, and **periodic delays**, including **jitter** and **decorrelated jitter**.
 
 ---
 ## 🚀 Quick start
@@ -35,7 +35,7 @@ while (attempt <= 10)
 
 ## ⭐ Key Features
 
-- ⚙️ Supports **multiple retry delay strategies** - constant, linear, exponential, and time series  
+- ⚙️ Supports **multiple retry delay strategies** - constant, linear, exponential, time series, and periodic  
 - 🎲 Built-in **jitter support** 
 - 📈 **Decorrelated jitter** implementation for exponential backoff, adapted from the [Polly](https://github.com/App-vNext/Polly)  
 - 🧩 **Flexible configuration** via `RetryDelayOptions`  
@@ -60,8 +60,52 @@ while (attempt <= 10)
 | **Linear**    | Delay increases linearly: `(attempt + 1) * slopeFactor * baseDelay`.                          |
 | **Exponential** | Delay grows exponentially: `baseDelay * (exponentialFactor ^ attempt)`. Decorrelated jitter available. |
 | **TimeSeries** | Uses a predefined sequence of delays. Once exhausted, the last value repeats.                |
+| **Periodic** | Uses a predefined sequence of delays that cycles back to the first value after reaching the last. |
 
 All types respect the optional `MaxDelay` limit.
+
+### Usage Examples
+
+**Constant Delay**
+```csharp
+var delay = ConstantRetryDelay.Create(TimeSpan.FromSeconds(2));
+// Returns: 2s, 2s, 2s, 2s, ...
+```
+
+**Linear Delay**
+```csharp
+var delay = LinearRetryDelay.Create(
+    baseDelay: TimeSpan.FromSeconds(1),
+    slopeFactor: 1.0);
+// Returns: 1s, 2s, 3s, 4s, 5s, ...
+```
+
+**Exponential Delay**
+```csharp
+var delay = ExponentialRetryDelay.Create(
+    baseDelay: TimeSpan.FromMilliseconds(500),
+    exponentialFactor: 2.0,
+    maxDelay: TimeSpan.FromSeconds(10));
+// Returns: 0.5s, 1s, 2s, 4s, 8s, 10s, 10s, ...
+```
+
+**TimeSeries Delay**
+```csharp
+var delay = TimeSeriesRetryDelay.Create(
+    TimeSpan.FromMilliseconds(500),
+    TimeSpan.FromSeconds(2),
+    TimeSpan.FromSeconds(5));
+// Returns: 0.5s, 2s, 5s, 5s, 5s, ... (repeats last value)
+```
+
+**Periodic Delay**
+```csharp
+var delay = PeriodicRetryDelay.Create(
+    TimeSpan.FromMilliseconds(500),
+    TimeSpan.FromSeconds(2),
+    TimeSpan.FromSeconds(5));
+// Returns: 0.5s, 2s, 5s, 0.5s, 2s, 5s, ... (cycles back to first)
+```
 
 ---
 
