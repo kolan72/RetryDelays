@@ -5,7 +5,7 @@ namespace RetryDelays
 	/// </summary>
 	public class LinearRetryDelayOptions : RetryDelayOptions
 	{
-		internal override RetryDelayType DelayType => RetryDelayType.Linear;
+		public override RetryDelayType DelayType => RetryDelayType.Linear;
 
 		/// <summary>
 		/// Slope factor to use.

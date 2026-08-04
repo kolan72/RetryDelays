@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace RetryDelays
 {
@@ -16,6 +17,7 @@ namespace RetryDelays
 			}
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected override TimeSpan GetBaseDelay(int attempt)
 		{
 			return _delayOptions.BaseDelay;

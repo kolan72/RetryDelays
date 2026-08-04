@@ -5,7 +5,7 @@ namespace RetryDelays
 	/// </summary>
 	public class ExponentialRetryDelayOptions : RetryDelayOptions
 	{
-		internal override RetryDelayType DelayType => RetryDelayType.Exponential;
+		public override RetryDelayType DelayType => RetryDelayType.Exponential;
 
 		/// <summary>
 		/// Exponential factor to use.
