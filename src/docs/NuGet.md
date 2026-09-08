@@ -24,9 +24,9 @@ while (attempt <= 10)
     }
     catch (Exception)
     {
+        var nextDelay = delay.GetDelay(attempt);
         attempt++;
 
-        var nextDelay = delay.GetDelay(attempt);
         await Task.Delay(nextDelay, token);
     }
 }
@@ -137,8 +137,8 @@ async Task<T> ExecuteWithRetry<T>(
         }
         catch
         {
-            attempt++;
             var delay = retryDelay.GetDelay(attempt);
+            attempt++;
             await Task.Delay(delay, cancellationToken);
         }
     }
