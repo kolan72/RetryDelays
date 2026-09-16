@@ -26,6 +26,7 @@ public class RetryDelayAnalysisService
         var exponential = new ExponentialRetryDelay(_config.DelayOption2);
         var linear = new LinearRetryDelay(_config.DelayOption3);
         var timeSeries = new TimeSeriesRetryDelay(_config.DelayOption4);
+        var periodic = new PeriodicRetryDelay(_config.DelayOption5);
 
         return new RetryDelayAnalysisResult
         {
@@ -33,6 +34,7 @@ public class RetryDelayAnalysisService
             DelayOption2 = BuildSchedule(exponential, _config.DelayOption2.DelayType, attempts),
             DelayOption3 = BuildSchedule(linear, _config.DelayOption3.DelayType, attempts),
             DelayOption4 = BuildSchedule(timeSeries, _config.DelayOption4.DelayType, attempts),
+            DelayOption5 = BuildSchedule(periodic, _config.DelayOption5.DelayType, attempts),
         };
     }
 
@@ -63,6 +65,7 @@ public record RetryDelayAnalysisResult
     public DelaySchedule DelayOption2 { get; init; } = new();
     public DelaySchedule DelayOption3 { get; init; } = new();
     public DelaySchedule DelayOption4 { get; init; } = new();
+    public DelaySchedule DelayOption5 { get; init; } = new();
 }
 
 public record DelaySchedule

@@ -19,4 +19,7 @@ public class RetryConfiguration : IRetryConfiguration
 
     /// <inheritdoc/>
     public TimeSeriesRetryDelayOptions DelayOption4 { get; set; } = new();
+
+    /// <inheritdoc/>
+    public PeriodicRetryDelayOptions DelayOption5 { get; set; } = new();
 }
