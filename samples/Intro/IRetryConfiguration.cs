@@ -18,4 +18,7 @@ public interface IRetryConfiguration
 
     /// <summary>Fourth delay option — time-series delay.</summary>
     TimeSeriesRetryDelayOptions DelayOption4 { get; }
+
+    /// <summary>Fifth delay option — periodic delay.</summary>
+    PeriodicRetryDelayOptions DelayOption5 { get; }
 }

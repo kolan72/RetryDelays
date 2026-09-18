@@ -21,6 +21,8 @@ builder.Services.Configure<LinearRetryDelayOptions>(
     builder.Configuration.GetSection("RetryDelays:Linear"));
 builder.Services.Configure<TimeSeriesRetryDelayOptions>(
     builder.Configuration.GetSection("RetryDelays:TimeSeries"));
+builder.Services.Configure<PeriodicRetryDelayOptions>(
+    builder.Configuration.GetSection("RetryDelays:Periodic"));
 
 var app = builder.Build();
 
@@ -88,6 +90,26 @@ app.MapGet("/timeseries-retry", (IOptions<TimeSeriesRetryDelayOptions> options) 
         options.Value.MaxDelay,
         options.Value.Times,
         NextDelay = delay.GetDelay(1)
+    };
+});
+
+// Periodic retry delay endpoint — demonstrates the cycling delay sequence
+app.MapGet("/periodic-retry", (IOptions<PeriodicRetryDelayOptions> options) =>
+{
+    var delay = new PeriodicRetryDelay(options.Value);
+    var times = options.Value.Times;
+    var cycleLength = Math.Max(times.Length, 1);
+    return new
+    {
+        Type = "Periodic",
+        options.Value.BaseDelay,
+        options.Value.UseJitter,
+        options.Value.MaxDelay,
+        Times = times,
+        SampleDelays = Enumerable.Range(0, 2 * cycleLength)
+            .Select(attempt => new { Attempt = attempt, Delay = delay.GetDelay(attempt).ToString() })
+            .ToArray(),
+        NextDelay = delay.GetDelay(0)
     };
 });
 
