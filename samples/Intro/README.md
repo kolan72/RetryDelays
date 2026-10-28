@@ -34,9 +34,10 @@ All five delay options live under a single `RetryConfiguration` key and are boun
     },
     "DelayOption3": {
       "BaseDelay": "00:00:01",
-      "UseJitter": false,
+      "UseJitter": true,
       "MaxDelay": "00:00:30",
-      "SlopeFactor": 1.5
+      "SlopeFactor": 1.5,
+      "JitterPercent": 10
     },
     "DelayOption4": {
       "BaseDelay": "00:00:00",
@@ -71,7 +72,7 @@ All five delay options live under a single `RetryConfiguration` key and are boun
   "RetryDelays": {
     "Constant":     { "BaseDelay": "00:00:02", "UseJitter": false, "MaxDelay": "00:00:30" },
     "Exponential":  { "BaseDelay": "00:00:01", "UseJitter": true,  "MaxDelay": "00:01:00", "ExponentialFactor": 2.0 },
-    "Linear":       { "BaseDelay": "00:00:01", "UseJitter": false, "MaxDelay": "00:00:30", "SlopeFactor": 1.5 },
+    "Linear":       { "BaseDelay": "00:00:01", "UseJitter": true,  "MaxDelay": "00:00:30", "SlopeFactor": 1.5, "JitterPercent": 10 },
     "TimeSeries":   { "BaseDelay": "00:00:00", "UseJitter": false, "MaxDelay": "00:01:00", "Times": ["00:00:01","00:00:02","00:00:04","00:00:08"] },
     "Periodic":     { "BaseDelay": "00:00:00", "UseJitter": false, "MaxDelay": "00:01:00", "Times": ["00:00:01","00:00:03","00:00:10"] }
   }

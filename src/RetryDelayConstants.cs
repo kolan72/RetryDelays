@@ -13,7 +13,8 @@ namespace RetryDelays
 
 		internal static readonly double MaxTimeSpanMs = (TimeSpan.MaxValue - TimeSpan.FromMilliseconds(2)).TotalMilliseconds;
 
-		internal const double JitterFactor = 0.5;
+		// Default spread (±) of the standard jitter, expressed as a percentage of the calculated delay.
+		internal const double DefaultJitterPercent = 25.0;
 
 		internal const double ExponentialFactor = 2.0;
 

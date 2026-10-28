@@ -63,12 +63,78 @@
 
 			var result = delay.GetDelay(1);
 			var baseMs = baseDelay.TotalMilliseconds;
-			var offset = baseMs * RetryDelayConstants.JitterFactor / 2;
+			var offset = baseMs * RetryDelayConstants.DefaultJitterPercent / 100;
 			var minExpected = TimeSpan.FromMilliseconds(baseMs - offset);
 			var maxExpected = TimeSpan.FromMilliseconds(baseMs + offset);
 
 			Assert.That(result, Is.GreaterThanOrEqualTo(minExpected));
 			Assert.That(result, Is.LessThanOrEqualTo(maxExpected));
+		}
+
+		[Test]
+		public void Should_Apply_Custom_JitterPercent_Within_Expected_Range()
+		{
+			var baseDelay = TimeSpan.FromMilliseconds(1000);
+			var options = new ConstantRetryDelayOptions
+			{
+				BaseDelay = baseDelay,
+				MaxDelay = TimeSpan.MaxValue,
+				UseJitter = true,
+				JitterPercent = 10
+			};
+			var delay = new ConstantRetryDelay(options);
+
+			var result = delay.GetDelay(1);
+			var baseMs = baseDelay.TotalMilliseconds;
+			var offset = baseMs * 10 / 100;
+			var minExpected = TimeSpan.FromMilliseconds(baseMs - offset);
+			var maxExpected = TimeSpan.FromMilliseconds(baseMs + offset);
+
+			Assert.That(result, Is.GreaterThanOrEqualTo(minExpected));
+			Assert.That(result, Is.LessThanOrEqualTo(maxExpected));
+		}
+
+		[Test]
+		public void Should_Return_BaseDelay_When_JitterPercent_Is_Zero()
+		{
+			var baseDelay = TimeSpan.FromMilliseconds(500);
+			var options = new ConstantRetryDelayOptions
+			{
+				BaseDelay = baseDelay,
+				UseJitter = true,
+				JitterPercent = 0
+			};
+			var delay = new ConstantRetryDelay(options);
+
+			var result = delay.GetDelay(1);
+
+			Assert.That(result, Is.EqualTo(baseDelay));
+		}
+
+		[Test]
+		public void Should_Throw_When_JitterPercent_Is_Negative()
+		{
+			var options = new ConstantRetryDelayOptions
+			{
+				BaseDelay = TimeSpan.FromSeconds(1),
+				UseJitter = true
+			};
+
+			Assert.That(() => options.JitterPercent = -1,
+				Throws.Exception.TypeOf<ArgumentOutOfRangeException>());
+		}
+
+		[Test]
+		public void Should_Throw_When_JitterPercent_Is_Greater_Than_100()
+		{
+			var options = new ConstantRetryDelayOptions
+			{
+				BaseDelay = TimeSpan.FromSeconds(1),
+				UseJitter = true
+			};
+
+			Assert.That(() => options.JitterPercent = 101,
+				Throws.Exception.TypeOf<ArgumentOutOfRangeException>());
 		}
 
 		[Test]

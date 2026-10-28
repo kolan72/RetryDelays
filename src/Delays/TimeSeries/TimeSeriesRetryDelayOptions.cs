@@ -5,7 +5,7 @@ namespace RetryDelays
 	/// <summary>
 	/// Represents options for the time series retry delay type.
 	/// </summary>
-	public class TimeSeriesRetryDelayOptions : RetryDelayOptions
+	public class TimeSeriesRetryDelayOptions : JitteredRetryDelayOptions
 	{
 		/// <summary>
 		/// Gets or sets the sequence of time intervals to use between attempts.

@@ -26,7 +26,7 @@ namespace RetryDelays
 		protected override TimeSpan GetJitteredDelay(int attempt)
 		{
 			return MaxDelayHelper.LimitToMaxDelay(
-				StandardJitter.AddJitter(_delayOptions.BaseDelay.TotalMilliseconds),
+				StandardJitter.AddJitter(_delayOptions.BaseDelay.TotalMilliseconds, _delayOptions.JitterPercent),
 				_adaptedMaxDelayMs,
 				_delayOptions.MaxDelay);
 		}

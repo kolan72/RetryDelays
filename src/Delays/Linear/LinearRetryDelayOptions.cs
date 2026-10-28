@@ -3,7 +3,7 @@ namespace RetryDelays
 	/// <summary>
 	/// Represents options for the <see cref="LinearRetryDelay"/>.
 	/// </summary>
-	public class LinearRetryDelayOptions : RetryDelayOptions
+	public class LinearRetryDelayOptions : JitteredRetryDelayOptions
 	{
 		public override RetryDelayType DelayType => RetryDelayType.Linear;
 
