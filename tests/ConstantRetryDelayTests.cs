@@ -166,5 +166,70 @@
 			Assert.That(instance, Is.Not.Null);
 			Assert.That(instance.GetDelay(1), Is.GreaterThanOrEqualTo(TimeSpan.FromMilliseconds(150)));
 		}
+
+		[Test]
+		public void Should_Apply_JitterPercent_From_Create_Within_Expected_Range()
+		{
+			var baseDelay = TimeSpan.FromMilliseconds(1000);
+			var delay = ConstantRetryDelay.Create(baseDelay, useJitter: true, jitterPercent: 10);
+
+			var result = delay.GetDelay(1);
+			var baseMs = baseDelay.TotalMilliseconds;
+			var offset = baseMs * 10 / 100;
+			var minExpected = TimeSpan.FromMilliseconds(baseMs - offset);
+			var maxExpected = TimeSpan.FromMilliseconds(baseMs + offset);
+
+			Assert.That(result, Is.GreaterThanOrEqualTo(minExpected));
+			Assert.That(result, Is.LessThanOrEqualTo(maxExpected));
+		}
+
+		[Test]
+		public void Should_Return_BaseDelay_When_Create_JitterPercent_Is_Zero()
+		{
+			var baseDelay = TimeSpan.FromMilliseconds(500);
+			var delay = ConstantRetryDelay.Create(baseDelay, useJitter: true, jitterPercent: 0);
+
+			var result = delay.GetDelay(1);
+
+			Assert.That(result, Is.EqualTo(baseDelay));
+		}
+
+		[Test]
+		public void Should_Throw_When_Create_JitterPercent_Without_UseJitter()
+		{
+			var baseDelay = TimeSpan.FromMilliseconds(500);
+
+			Assert.That(() => ConstantRetryDelay.Create(baseDelay, jitterPercent: 10),
+				Throws.ArgumentException.With.Property("ParamName").EqualTo("jitterPercent"));
+		}
+
+		[Test]
+		public void Should_Throw_When_Create_JitterPercent_Is_Negative()
+		{
+			var baseDelay = TimeSpan.FromMilliseconds(500);
+
+			Assert.That(() => ConstantRetryDelay.Create(baseDelay, useJitter: true, jitterPercent: -1),
+				Throws.TypeOf<ArgumentOutOfRangeException>().With.Property("ParamName").EqualTo("jitterPercent"));
+		}
+
+		[Test]
+		public void Should_Throw_When_Create_JitterPercent_Is_Greater_Than_100()
+		{
+			var baseDelay = TimeSpan.FromMilliseconds(500);
+
+			Assert.That(() => ConstantRetryDelay.Create(baseDelay, useJitter: true, jitterPercent: 101),
+				Throws.TypeOf<ArgumentOutOfRangeException>().With.Property("ParamName").EqualTo("jitterPercent"));
+		}
+
+		[Test]
+		public void Should_Treat_Null_JitterPercent_As_Omitted()
+		{
+			var baseDelay = TimeSpan.FromMilliseconds(500);
+			var delay = ConstantRetryDelay.Create(baseDelay, useJitter: false, jitterPercent: null);
+
+			var result = delay.GetDelay(1);
+
+			Assert.That(result, Is.EqualTo(baseDelay));
+		}
 	}
 }

@@ -267,5 +267,86 @@
 
 			Assert.That(result, Is.EqualTo(TimeSpan.Zero));
 		}
+
+		[Test]
+		public void Should_Apply_JitterPercent_From_Create_Within_Expected_Range()
+		{
+			var baseDelay = TimeSpan.FromMilliseconds(100);
+			var delay = LinearRetryDelay.Create(baseDelay, useJitter: true, jitterPercent: 10);
+
+			var result = delay.GetDelay(1);
+			var baseValue = 200.0; // 2 * 100 * 1.0
+			var jitterRange = baseValue * 10 / 100;
+			var minExpected = TimeSpan.FromMilliseconds(baseValue - jitterRange);
+			var maxExpected = TimeSpan.FromMilliseconds(baseValue + jitterRange);
+
+			Assert.That(result, Is.GreaterThanOrEqualTo(minExpected));
+			Assert.That(result, Is.LessThanOrEqualTo(maxExpected));
+		}
+
+		[Test]
+		public void Should_Apply_JitterPercent_From_Create_With_Custom_SlopeFactor_Within_Expected_Range()
+		{
+			var baseDelay = TimeSpan.FromMilliseconds(100);
+			var delay = LinearRetryDelay.Create(baseDelay, 2.0, useJitter: true, jitterPercent: 10);
+
+			var result = delay.GetDelay(1);
+			var baseValue = 400.0; // 2 * 100 * 2.0
+			var jitterRange = baseValue * 10 / 100;
+			var minExpected = TimeSpan.FromMilliseconds(baseValue - jitterRange);
+			var maxExpected = TimeSpan.FromMilliseconds(baseValue + jitterRange);
+
+			Assert.That(result, Is.GreaterThanOrEqualTo(minExpected));
+			Assert.That(result, Is.LessThanOrEqualTo(maxExpected));
+		}
+
+		[Test]
+		public void Should_Return_Calculated_Delay_When_Create_JitterPercent_Is_Zero()
+		{
+			var baseDelay = TimeSpan.FromMilliseconds(100);
+			var delay = LinearRetryDelay.Create(baseDelay, useJitter: true, jitterPercent: 0);
+
+			var result = delay.GetDelay(1);
+
+			Assert.That(result, Is.EqualTo(TimeSpan.FromMilliseconds(200)));
+		}
+
+		[Test]
+		public void Should_Throw_When_Create_JitterPercent_Without_UseJitter()
+		{
+			var baseDelay = TimeSpan.FromMilliseconds(100);
+
+			Assert.That(() => LinearRetryDelay.Create(baseDelay, jitterPercent: 10),
+				Throws.ArgumentException.With.Property("ParamName").EqualTo("jitterPercent"));
+		}
+
+		[Test]
+		public void Should_Throw_When_Create_JitterPercent_Is_Negative()
+		{
+			var baseDelay = TimeSpan.FromMilliseconds(100);
+
+			Assert.That(() => LinearRetryDelay.Create(baseDelay, useJitter: true, jitterPercent: -1),
+				Throws.TypeOf<ArgumentOutOfRangeException>().With.Property("ParamName").EqualTo("jitterPercent"));
+		}
+
+		[Test]
+		public void Should_Throw_When_Create_JitterPercent_Is_Greater_Than_100()
+		{
+			var baseDelay = TimeSpan.FromMilliseconds(100);
+
+			Assert.That(() => LinearRetryDelay.Create(baseDelay, useJitter: true, jitterPercent: 101),
+				Throws.TypeOf<ArgumentOutOfRangeException>().With.Property("ParamName").EqualTo("jitterPercent"));
+		}
+
+		[Test]
+		public void Should_Treat_Null_JitterPercent_As_Omitted()
+		{
+			var baseDelay = TimeSpan.FromMilliseconds(100);
+			var delay = LinearRetryDelay.Create(baseDelay, jitterPercent: null);
+
+			var result = delay.GetDelay(1);
+
+			Assert.That(result, Is.EqualTo(TimeSpan.FromMilliseconds(200)));
+		}
 	}
 }
