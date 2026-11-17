@@ -23,8 +23,9 @@ All five delay options live under a single `RetryConfiguration` key and are boun
   "RetryConfiguration": {
     "DelayOption1": {
       "BaseDelay": "00:00:02",
-      "UseJitter": false,
-      "MaxDelay": "00:00:30"
+      "UseJitter": true,
+      "MaxDelay": "00:00:30",
+      "JitterPercent": 15
     },
     "DelayOption2": {
       "BaseDelay": "00:00:01",
@@ -41,15 +42,17 @@ All five delay options live under a single `RetryConfiguration` key and are boun
     },
     "DelayOption4": {
       "BaseDelay": "00:00:00",
-      "UseJitter": false,
+      "UseJitter": true,
       "MaxDelay": "00:01:00",
-      "Times": [ "00:00:01", "00:00:02", "00:00:04", "00:00:08" ]
+      "Times": [ "00:00:01", "00:00:02", "00:00:04", "00:00:08" ],
+      "JitterPercent": 30
     },
     "DelayOption5": {
       "BaseDelay": "00:00:00",
-      "UseJitter": false,
+      "UseJitter": true,
       "MaxDelay": "00:01:00",
-      "Times": [ "00:00:01", "00:00:03", "00:00:10" ]
+      "Times": [ "00:00:01", "00:00:03", "00:00:10" ],
+      "JitterPercent": 20
     }
   }
 }
@@ -70,14 +73,24 @@ All five delay options live under a single `RetryConfiguration` key and are boun
 ```json
 {
   "RetryDelays": {
-    "Constant":     { "BaseDelay": "00:00:02", "UseJitter": false, "MaxDelay": "00:00:30" },
+    "Constant":     { "BaseDelay": "00:00:02", "UseJitter": true,  "MaxDelay": "00:00:30", "JitterPercent": 15 },
     "Exponential":  { "BaseDelay": "00:00:01", "UseJitter": true,  "MaxDelay": "00:01:00", "ExponentialFactor": 2.0 },
     "Linear":       { "BaseDelay": "00:00:01", "UseJitter": true,  "MaxDelay": "00:00:30", "SlopeFactor": 1.5, "JitterPercent": 10 },
-    "TimeSeries":   { "BaseDelay": "00:00:00", "UseJitter": false, "MaxDelay": "00:01:00", "Times": ["00:00:01","00:00:02","00:00:04","00:00:08"] },
-    "Periodic":     { "BaseDelay": "00:00:00", "UseJitter": false, "MaxDelay": "00:01:00", "Times": ["00:00:01","00:00:03","00:00:10"] }
+    "TimeSeries":   { "BaseDelay": "00:00:00", "UseJitter": true,  "MaxDelay": "00:01:00", "Times": ["00:00:01","00:00:02","00:00:04","00:00:08"], "JitterPercent": 30 },
+    "Periodic":     { "BaseDelay": "00:00:00", "UseJitter": true,  "MaxDelay": "00:01:00", "Times": ["00:00:01","00:00:03","00:00:10"], "JitterPercent": 20 }
   }
 }
 ```
+
+#### JitterPercent Property
+
+The `JitterPercent` property controls the spread of standard jitter as a percentage of the calculated delay (valid range: 0–100). This property is available for **Constant**, **Linear**, **TimeSeries**, and **Periodic** delay types (all derived from `JitteredRetryDelayOptions`).
+
+- **Default value**: 25 (±25% of the calculated delay)
+- **Example**: `JitterPercent: 10` with a 2-second base delay randomizes delays within ±10% (1.8s–2.2s)
+- **Only used when**: `UseJitter` is `true`
+
+> **Note**: Exponential delays use **decorrelated jitter** instead of standard jitter, so `ExponentialRetryDelayOptions` does not have a `JitterPercent` property.
 
 ## DI registration
 
@@ -121,20 +134,23 @@ builder.Services.Configure<PeriodicRetryDelayOptions>(
 {
   "type": "Periodic",
   "baseDelay": "00:00:00",
-  "useJitter": false,
+  "useJitter": true,
+  "jitterPercent": 20,
   "maxDelay": "00:01:00",
   "times": [ "00:00:01", "00:00:03", "00:00:10" ],
   "sampleDelays": [
-    { "attempt": 0, "delay": "00:00:01" },
-    { "attempt": 1, "delay": "00:00:03" },
-    { "attempt": 2, "delay": "00:00:10" },
-    { "attempt": 3, "delay": "00:00:01" },
-    { "attempt": 4, "delay": "00:00:03" },
-    { "attempt": 5, "delay": "00:00:10" }
+    { "attempt": 0, "delay": "00:00:01.2340000" },
+    { "attempt": 1, "delay": "00:00:02.9876000" },
+    { "attempt": 2, "delay": "00:00:09.1234000" },
+    { "attempt": 3, "delay": "00:00:00.8765000" },
+    { "attempt": 4, "delay": "00:00:03.4567000" },
+    { "attempt": 5, "delay": "00:00:10.9876000" }
   ],
-  "nextDelay": "00:00:01"
+  "nextDelay": "00:00:00.9234000"
 }
 ```
+
+> **Note**: With `UseJitter: true` and `JitterPercent: 20`, delays are randomized within ±20% of their base values. The actual values will vary between requests.
 
 ### Analysis endpoint (uses `RetryConfiguration` via `IRetryConfiguration`)
 
@@ -194,7 +210,7 @@ builder.Services.Configure<PeriodicRetryDelayOptions>(
 }
 ```
 
-> Note: `delayOption2` uses jitter, so its values will vary between requests. With a larger `attempts` value (e.g. `attempts=5`), `delayOption5` demonstrates the periodic wrap-around — the sequence `1s, 3s, 10s` repeats as `1s, 3s, 10s, 1s, 3s`, unlike the TimeSeries strategy which would hold the last value.
+> **Note**: With jitter enabled on multiple delay strategies, the values will vary between requests. With a larger `attempts` value (e.g. `attempts=5`), `delayOption5` demonstrates the periodic wrap-around — the sequence `1s, 3s, 10s` repeats as `1s, 3s, 10s, 1s, 3s`, unlike the TimeSeries strategy which would hold the last value.
 
 ## Usage
 
