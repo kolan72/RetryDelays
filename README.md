@@ -1,5 +1,10 @@
 # RetryDelays
 
+[![nuget](https://img.shields.io/nuget/v/RetryDelays
+)](https://www.nuget.org/packages/RetryDelays)
+
+![RetryDelays](RetryDelays.png)
+
 **RetryDelays** is a lightweight .NET library for generating retry delay strategies.  
 Simplifies retry logic by removing the need for manual delay calculations - just use the appropriate `RetryDelay` or `RetryDelayOptions`.
 Supports common retry patterns such as **constant**, **linear**, **exponential**, **time-series**, and **periodic delays**, including **jitter** and **decorrelated jitter**.
