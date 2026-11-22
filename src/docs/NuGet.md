@@ -111,7 +111,16 @@ var delay = PeriodicRetryDelay.Create(
 
 ## 🎲 Jitter Strategies
 
-**Standard Jitter** - Applies ±25% randomization to calculated delays to prevent synchronized retries across distributed systems.
+**Standard Jitter** - Applies ±25% randomization to calculated delays to prevent synchronized retries across distributed systems. The spread is configurable via the `JitterPercent` property (0–100) on the options, or as the optional `jitterPercent` parameter of the corresponding `Create` methods (`null` = default 25):
+
+```csharp
+var delay = ConstantRetryDelay.Create(
+    TimeSpan.FromSeconds(2),
+    useJitter: true,
+    jitterPercent: 10); // randomize delays within ±10% of 2s (1.8s–2.2s)
+```
+
+`jitterPercent` may only be specified together with `useJitter: true` and applies to **Constant**, **Linear**, **TimeSeries**, and **Periodic** (Exponential uses decorrelated jitter instead).
 
 **Decorrelated Jitter** - Available for exponential delays. Uses an advanced formula that produces smoother, more evenly distributed delays with fewer spikes than standard jitter. Based on techniques from [Polly](https://github.com/App-vNext/Polly).
 

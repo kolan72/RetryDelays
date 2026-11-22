@@ -3,7 +3,7 @@ namespace RetryDelays
 	/// <summary>
 	/// Represents options for the <see cref="ConstantRetryDelay"/>.
 	/// </summary>
-	public class ConstantRetryDelayOptions : RetryDelayOptions
+	public class ConstantRetryDelayOptions : JitteredRetryDelayOptions
 	{
 		public override RetryDelayType DelayType => RetryDelayType.Constant;
 

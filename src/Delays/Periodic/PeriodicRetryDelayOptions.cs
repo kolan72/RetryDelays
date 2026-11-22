@@ -5,7 +5,7 @@ namespace RetryDelays
 	/// <summary>
 	/// Represents options for the periodic retry delay type.
 	/// </summary>
-	public class PeriodicRetryDelayOptions : RetryDelayOptions
+	public class PeriodicRetryDelayOptions : JitteredRetryDelayOptions
 	{
 		/// <summary>
 		/// Gets or sets the sequence of time intervals to use between attempts.
