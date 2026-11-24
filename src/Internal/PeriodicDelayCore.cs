@@ -9,11 +9,13 @@ namespace RetryDelays
 		private readonly TimeSpan _maxDelay;
 		private readonly TimeSpan[] _times;
 		private readonly int _timesLength;
+		private readonly double _jitterPercent;
 
 		public PeriodicDelayCore(PeriodicRetryDelayOptions delayOptions) : base(delayOptions)
 		{
 			_adaptedMaxDelayMs = MaxDelayHelper.GetAdaptedMaxDelayMs(delayOptions.MaxDelay);
 			_maxDelay = delayOptions.MaxDelay;
+			_jitterPercent = delayOptions.JitterPercent;
 			if (delayOptions.Times?.Length == 0)
 			{
 				_times = new[] { delayOptions.BaseDelay > delayOptions.MaxDelay ? delayOptions.MaxDelay : delayOptions.BaseDelay };
@@ -32,7 +34,7 @@ namespace RetryDelays
 
 		protected override TimeSpan GetJitteredDelay(int attempt)
 		{
-			return MaxDelayHelper.LimitToMaxDelay(StandardJitter.AddJitter(GetDelayInner(attempt).TotalMilliseconds), _adaptedMaxDelayMs, _maxDelay);
+			return MaxDelayHelper.LimitToMaxDelay(StandardJitter.AddJitter(GetDelayInner(attempt).TotalMilliseconds, _jitterPercent), _adaptedMaxDelayMs, _maxDelay);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

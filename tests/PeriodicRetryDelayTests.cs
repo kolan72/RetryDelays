@@ -245,6 +245,51 @@ namespace RetryDelays.Tests
 		}
 
 		[Test]
+		public void Should_Apply_Custom_JitterPercent_Within_Expected_Range()
+		{
+			// Arrange
+			var times = new[] { TimeSpan.FromSeconds(1) };
+			var options = new PeriodicRetryDelayOptions
+			{
+				BaseDelay = TimeSpan.FromSeconds(1),
+				MaxDelay = TimeSpan.FromSeconds(10),
+				UseJitter = true,
+				JitterPercent = 10,
+				Times = times
+			};
+			var delay = new PeriodicRetryDelay(options);
+
+			// Act
+			var results = Enumerable.Range(0, 10).Select(_ => delay.GetDelay(0)).ToArray();
+
+			// Assert - With 10% jitter, all results must stay within ±10% of 1s
+			Assert.That(results.ToList().TrueForAll(r => r.TotalMilliseconds >= 900 && r.TotalMilliseconds <= 1100), Is.True);
+		}
+
+		[Test]
+		public void Should_Return_Times_Value_When_JitterPercent_Is_Zero()
+		{
+			// Arrange
+			var times = new[] { TimeSpan.FromSeconds(1) };
+			var options = new PeriodicRetryDelayOptions
+			{
+				BaseDelay = TimeSpan.FromSeconds(1),
+				MaxDelay = TimeSpan.FromSeconds(10),
+				UseJitter = true,
+				JitterPercent = 0,
+				Times = times
+			};
+			var delay = new PeriodicRetryDelay(options);
+
+			// Act
+			var results = Enumerable.Range(0, 10).Select(_ => delay.GetDelay(0)).ToArray();
+
+			// Assert - With 0% jitter, all results must equal the time value
+			Assert.That(results.Distinct().Count(), Is.EqualTo(1));
+			Assert.That(results[0], Is.EqualTo(TimeSpan.FromSeconds(1)));
+		}
+
+		[Test]
 		public void Should_UseNonJitteredValues_WhenJitterDisabled()
 		{
 			// Arrange
@@ -306,6 +351,96 @@ namespace RetryDelays.Tests
 
 			// Assert
 			Assert.That(delay.GetDelay(0), Is.EqualTo(baseDelay));
+		}
+
+		[Test]
+		public void Should_Apply_JitterPercent_From_Create_With_Single_Time_Within_Expected_Range()
+		{
+			var delay = PeriodicRetryDelay.Create(TimeSpan.FromSeconds(1), useJitter: true, jitterPercent: 10);
+
+			var result = delay.GetDelay(0);
+
+			Assert.That(result, Is.GreaterThanOrEqualTo(TimeSpan.FromMilliseconds(900)));
+			Assert.That(result, Is.LessThanOrEqualTo(TimeSpan.FromMilliseconds(1100)));
+		}
+
+		[Test]
+		public void Should_Apply_JitterPercent_From_Create_With_Two_Times_Within_Expected_Range()
+		{
+			var delay = PeriodicRetryDelay.Create(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2), useJitter: true, jitterPercent: 10);
+
+			var result = delay.GetDelay(0);
+
+			Assert.That(result, Is.GreaterThanOrEqualTo(TimeSpan.FromMilliseconds(900)));
+			Assert.That(result, Is.LessThanOrEqualTo(TimeSpan.FromMilliseconds(1100)));
+		}
+
+		[Test]
+		public void Should_Apply_JitterPercent_From_Create_With_Three_Times_Within_Expected_Range()
+		{
+			var delay = PeriodicRetryDelay.Create(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(3), useJitter: true, jitterPercent: 10);
+
+			var result = delay.GetDelay(0);
+
+			Assert.That(result, Is.GreaterThanOrEqualTo(TimeSpan.FromMilliseconds(900)));
+			Assert.That(result, Is.LessThanOrEqualTo(TimeSpan.FromMilliseconds(1100)));
+		}
+
+		[Test]
+		public void Should_Apply_JitterPercent_From_Create_With_Four_Times_Within_Expected_Range()
+		{
+			var delay = PeriodicRetryDelay.Create(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(4), useJitter: true, jitterPercent: 10);
+
+			var result = delay.GetDelay(0);
+
+			Assert.That(result, Is.GreaterThanOrEqualTo(TimeSpan.FromMilliseconds(900)));
+			Assert.That(result, Is.LessThanOrEqualTo(TimeSpan.FromMilliseconds(1100)));
+		}
+
+		[Test]
+		public void Should_Apply_JitterPercent_From_Create_With_Enumerable_Times_Within_Expected_Range()
+		{
+			var times = new[] { TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2) };
+			var delay = PeriodicRetryDelay.Create(times, useJitter: true, jitterPercent: 10);
+
+			var results = Enumerable.Range(0, 10).Select(_ => delay.GetDelay(0)).ToArray();
+
+			Assert.That(results.ToList().TrueForAll(r => r.TotalMilliseconds >= 900 && r.TotalMilliseconds <= 1100), Is.True);
+		}
+
+		[Test]
+		public void Should_Throw_When_Create_JitterPercent_Without_UseJitter()
+		{
+			Assert.That(() => PeriodicRetryDelay.Create(TimeSpan.FromSeconds(1), jitterPercent: 10),
+				Throws.ArgumentException.With.Property("ParamName").EqualTo("jitterPercent"));
+		}
+
+		[Test]
+		public void Should_Throw_When_Create_JitterPercent_Is_Negative()
+		{
+			var times = new[] { TimeSpan.FromSeconds(1) };
+
+			Assert.That(() => PeriodicRetryDelay.Create(times, useJitter: true, jitterPercent: -1),
+				Throws.TypeOf<ArgumentOutOfRangeException>().With.Property("ParamName").EqualTo("jitterPercent"));
+		}
+
+		[Test]
+		public void Should_Throw_When_Create_JitterPercent_Is_Greater_Than_100()
+		{
+			Assert.That(() => PeriodicRetryDelay.Create(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2), useJitter: true, jitterPercent: 101),
+				Throws.TypeOf<ArgumentOutOfRangeException>().With.Property("ParamName").EqualTo("jitterPercent"));
+		}
+
+		[Test]
+		public void Should_Treat_Null_JitterPercent_As_Omitted()
+		{
+			var times = new[] { TimeSpan.FromSeconds(1) };
+			var delay = PeriodicRetryDelay.Create(times, jitterPercent: null);
+
+			var results = Enumerable.Range(0, 5).Select(_ => delay.GetDelay(0)).ToArray();
+
+			Assert.That(results.Distinct().Count(), Is.EqualTo(1));
+			Assert.That(results[0], Is.EqualTo(TimeSpan.FromSeconds(1)));
 		}
 	}
 

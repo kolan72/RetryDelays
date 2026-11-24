@@ -43,6 +43,7 @@ app.MapGet("/constant-retry", (IOptions<ConstantRetryDelayOptions> options) =>
         Type = "Constant",
 		options.Value.BaseDelay,
 		options.Value.UseJitter,
+		options.Value.JitterPercent,
 		options.Value.MaxDelay,
         NextDelay = delay.GetDelay(1)
     };
@@ -73,6 +74,7 @@ app.MapGet("/linear-retry", (IOptions<LinearRetryDelayOptions> options) =>
         options.Value.BaseDelay,
         options.Value.SlopeFactor,
         options.Value.UseJitter,
+        options.Value.JitterPercent,
         options.Value.MaxDelay,
         NextDelay = delay.GetDelay(1)
     };
@@ -87,6 +89,7 @@ app.MapGet("/timeseries-retry", (IOptions<TimeSeriesRetryDelayOptions> options) 
         Type = "TimeSeries",
         options.Value.BaseDelay,
         options.Value.UseJitter,
+        options.Value.JitterPercent,
         options.Value.MaxDelay,
         options.Value.Times,
         NextDelay = delay.GetDelay(1)
@@ -104,6 +107,7 @@ app.MapGet("/periodic-retry", (IOptions<PeriodicRetryDelayOptions> options) =>
         Type = "Periodic",
         options.Value.BaseDelay,
         options.Value.UseJitter,
+        options.Value.JitterPercent,
         options.Value.MaxDelay,
         Times = times,
         SampleDelays = Enumerable.Range(0, 2 * cycleLength)
